@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Enter name</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            var loginCount = 0;
+            function login(){
+                var xhttp = new XMLHttpRequest();
+                var name = document.getElementById("name").value;
+                
+                //checkNumber=0 means this is a name check from login page
+                xhttp.open("GET", "/HibernateLogin/doCheck?checkNumber=0&name=" + name, false);                
+                xhttp.send();
+                //When you use async = false, do NOT write an onreadystatechange function.
+                //just put the code after the send() statement:
+                var responseText = xhttp.responseText;
+                
+                //The most, three times chance to test the name.
+                if(responseText == -1){
+                    if(++loginCount >= 3){
+                        window.location.assign("addMember.html");
+                    }                    
+                    document.getElementById("message").innerHTML = "The name is wrong.(The number of chances you left :" +
+                            (3 - loginCount) + ")"; 
+                    document.getElementById("name").select();
+                }else{
+                    window.location.assign(responseText);
+                }                
+            }
+        </script>
+    </head>
+    <body>
+        Please input your name : <input id="name" type="text" size="10" ><button onclick="login()">Login</button><br>
+        <p id="message"></p>
+    </body>
+</html>

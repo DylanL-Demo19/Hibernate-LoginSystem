@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+        <script>
+            var nameState = 0;
+            var passwordState = 0;
+            function checkID(){
+                var textID = document.getElementById("newID");
+                var name = textID.value;
+                var message = document.getElementById("idMessage");
+                message.style.fontSize= "x-small";
+                
+                var xhttp =  new XMLHttpRequest();
+                //checkNumber=2 means this is a name check from login page
+                xhttp.open("GET", "/HibernateLogin/doCheck?checkNumber=2&name=" + name, false);                
+                xhttp.send();
+                nameState = xhttp.responseText;
+                
+                var s = "(This new ID is ";
+                if(nameState === "-1"){
+                    message.style.color = "red";
+                    s += "already existed.)";
+                    textID.focus();
+                    textID.select();
+                }else if(nameState === "1"){
+                    message.style.color = "blue";
+                    s += "usable.)";
+                }
+                message.innerHTML = s;
+            }
+            function checkPassword(){
+                var textPassword = document.getElementById("password");
+                var newID =  document.getElementById("newID").value;
+                var password = textPassword.value;
+                var message = document.getElementById("passwordMessage");
+                message.style.fontSize= "x-small";
+                var s = "(This password is ";
+                if(newID === password || password.length < 4){
+                    message.style.color = "red";
+                    s += "unusable.)";
+                    textPassword.focus();
+                    textPassword.select();
+                    passwordState = -1;
+                }else{
+                    message.style.color = "blue";
+                    s += "usable.)";
+                    passwordState = 1;
+                }
+                message.innerHTML = s;                
+            }
+            function addMember(){
+                var name = document.getElementById("newID").value;
+                var password = document.getElementById("password").value;
+                if(nameState == 1 && passwordState == 1){
+                    var xhttp =  new XMLHttpRequest();
+                    xhttp.open("POST", "/HibernateLogin/addMember",false);   
+                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded")             
+                    xhttp.send("name=" + name + "&password=" + password);
+                    window.location.assign(xhttp.responseText);
+                }
+            }
+            function reset(){
+                var name = document.getElementById("newID");
+                var password = document.getElementById("password");
+                name.value = "";
+                password.value = "";
+                name.focus();                
+            }
+        </script>
+    </head>
+    <body>
+        <H2>Add New Member</H2>
+        Please input a new ID for you : <input type="text" id="newID" size="10" onblur="checkID()">
+        <output id="idMessage" ></output> <br>
+        Please input your password: :<input type="password" id="password" size="10" onblur="checkPassword()">
+        <output id="passwordMessage" ></output> <br>        
+        <button onclick="addMember()">Send</button> <button onclick="reset()">Reset</button>
+        <p><a href="../index.html">Back Home</a></p>
+    </body>
+
+</html>
